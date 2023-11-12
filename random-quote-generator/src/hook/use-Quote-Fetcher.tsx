@@ -12,14 +12,16 @@ const useQuoteFetcher = (URL: string) => {
       .then(({ data: response }) => {
         setQuote(response)
         setLoading(false)
+        generateRandomQuote(response)
       })
       .finally(() => setLoading(false))
-    generateRandomQuote()
   }, [])
-  const generateRandomQuote = () => {
-    const randomIdx = quote.length && Math.floor(Math.random() * quote.length)
-
-    setRandomQuote((previousArray): any => [...previousArray, quote[randomIdx]])
+  const generateRandomQuote = (quotes = quote) => {
+    const randomIdx = quotes.length && Math.floor(Math.random() * quotes.length)
+    setRandomQuote((previousArray): any => [
+      ...previousArray,
+      quotes[randomIdx],
+    ])
   }
   return {
     isLoading,
