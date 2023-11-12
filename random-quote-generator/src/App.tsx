@@ -3,11 +3,40 @@ import { ReactComponent as Button } from "../src/assets/icons/button.svg"
 import { ReactComponent as Quotation } from "../src/assets/icons/quotation.svg"
 import { ReactComponent as Twitter } from "../src/assets/icons/twitter.svg"
 import { ReactComponent as Whatsapp } from "../src/assets/icons/whatsapp.svg"
+import { useState, useEffect } from "react"
+import useQuoteFetcher from "./hook/use-Quote-Fetcher"
 import "./App.css"
 
 function App() {
+  const URL = "https://type.fit/api/quotes"
+  const {
+    isLoading,
+    randomQuote,
+    generateRandomQuote,
+    currentIdx,
+    setCurrentIdx,
+  }: any = useQuoteFetcher(URL)
+  const [isDisabled, setIsDisabled] = useState(true)
+
+  const handleNextQuote = () => {
+    generateRandomQuote()
+    setCurrentIdx((currentIdx + 1) % randomQuote.length)
+    if (currentIdx > 0) {
+      console.log(currentIdx, "inside if")
+      setIsDisabled(false)
+    }
+  }
+  const handlePreviousQuote = () => {
+    // setCurrentIdx((prevIdx) => (prevIdx - 1) % randomQuote.length)
+    // if (currentIdx <= 1) {
+    //   console.log(currentIdx)
+    //   setIsDisabled(true)
+    // }
+  }
+
   return (
     <>
+      {console.log(currentIdx, randomQuote)}
       <header>
         <div className="top-strip" />
       </header>
@@ -16,15 +45,21 @@ function App() {
           <Quotation />
           <div className="quote">
             <p>
-              In the end, we will remember not the words of our enemies, but the
-              silence of our friends.
+              {currentIdx > 0 ? randomQuote[currentIdx]?.text : "Loading..."}
             </p>
-            <span>- Martin Luther King Jr.</span>
+            <span>-{!isLoading && randomQuote[currentIdx]?.author}</span>
           </div>
           <div className="bottom-navigation">
             <div>
-              <Button className={classnames("rotate cp")} />
-              <Button className="cp" />
+              <Button
+                className={
+                  isDisabled
+                    ? classnames("rotate disabled-button ")
+                    : classnames("rotate cp")
+                }
+                onClick={handlePreviousQuote}
+              />
+              <Button className="cp" onClick={handleNextQuote} />
             </div>
             <div className="share">
               <span>Share At:</span>
