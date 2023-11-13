@@ -3,7 +3,7 @@ import { ReactComponent as Button } from "../src/assets/icons/button.svg"
 import { ReactComponent as Quotation } from "../src/assets/icons/quotation.svg"
 import { ReactComponent as Twitter } from "../src/assets/icons/twitter.svg"
 import { ReactComponent as Whatsapp } from "../src/assets/icons/whatsapp.svg"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import useQuoteFetcher from "./hook/use-Quote-Fetcher"
 import "./App.css"
 
@@ -16,48 +16,47 @@ function App() {
     currentIdx,
     setCurrentIdx,
   }: any = useQuoteFetcher(URL)
-  const [isDisabled, setIsDisabled] = useState(true)
-
+  const [isPreviousDisabled, setPreviousDisabled] = useState(true)
+  useEffect(() => {
+    if (currentIdx > 0) {
+      setPreviousDisabled(false)
+    } else {
+      setPreviousDisabled(true)
+    }
+  }, [currentIdx])
   const handleNextQuote = () => {
     if (randomQuote.length - 1 === currentIdx) {
       generateRandomQuote()
     }
     setCurrentIdx((prev: any) => prev + 1)
-    if (currentIdx >= 0) {
-      console.log(currentIdx, "inside if")
-      setIsDisabled(false)
-    }
   }
   const handlePreviousQuote = () => {
     let temp = currentIdx
     setCurrentIdx(temp - 1)
-    if (temp - 1 === 0) {
-      setIsDisabled(true)
-    }
   }
 
   return (
     <>
-      {console.log(currentIdx, randomQuote)}
       <header>
         <div className="top-strip" />
       </header>
+      {console.log("Loading", isLoading)}
       <div className="container">
         <div className="quotation-box ">
           <Quotation />
-          <div className="quote">
-            <p>
-              {randomQuote.length >= 0
-                ? randomQuote[currentIdx]?.text
-                : "Loading..."}
-            </p>
-            <span>-{!isLoading && randomQuote[currentIdx]?.author}</span>
-          </div>
+          {isLoading ? (
+            <h1>Loading</h1>
+          ) : (
+            <div className="quote">
+              <p>{randomQuote[currentIdx]?.text}</p>
+              <span>-{randomQuote[currentIdx]?.author}</span>
+            </div>
+          )}
           <div className="bottom-navigation">
             <div>
               <Button
                 className={
-                  isDisabled
+                  isPreviousDisabled
                     ? classnames("rotate disabled-button ")
                     : classnames("rotate cp")
                 }

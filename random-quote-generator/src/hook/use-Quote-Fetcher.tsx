@@ -7,6 +7,7 @@ const useQuoteFetcher = (URL: string) => {
   const [isLoading, setLoading] = useState(false)
   const [currentIdx, setCurrentIdx] = useState(0)
   useEffect(() => {
+    setLoading(true)
     axios
       .get(URL)
       .then(({ data: response }) => {
@@ -16,12 +17,23 @@ const useQuoteFetcher = (URL: string) => {
       })
       .finally(() => setLoading(false))
   }, [])
+
   const generateRandomQuote = (quotes = quote) => {
-    const randomIdx = quotes.length && Math.floor(Math.random() * quotes.length)
-    setRandomQuote((previousArray): any => [
-      ...previousArray,
-      quotes[randomIdx],
-    ])
+    const tempArr = [...quotes]
+
+    const randomIdx =
+      tempArr.length && Math.floor(Math.random() * (tempArr.length - 1))
+    if (tempArr?.[randomIdx]) {
+      setRandomQuote((previousArray): any => [
+        ...previousArray,
+        tempArr[randomIdx],
+      ])
+    }
+    tempArr.splice(randomIdx, 1)
+    if (tempArr.length === 0) {
+      setCurrentIdx(-1)
+    }
+    setQuote(tempArr)
   }
   return {
     isLoading,
